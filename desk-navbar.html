@@ -1,0 +1,123 @@
+<!--
+@license
+Copyright (c) 2016 The Jviz Project Authors. All rights reserved.
+The Jviz Project is under the MIT License. See https://github.com/jviz/jviz/blob/dev/LICENSE
+-->
+
+<!-- Import dendencies -->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../jviz/jviz.html">
+<link rel="import" href="../jviz-styles/jviz-styles.html">
+<link rel="import" href="../jviz-icons/jviz-icons.html">
+
+<!-- Import desk components -->
+<link rel="import" href="../desk-styles/desk-styles.html">
+
+<!-- Navbar element -->
+<dom-module id="desk-navbar">
+  <template>
+    <style>
+      :host
+      {
+        --desk-navbar--color-background: var(--jviz-navy-1);
+        --desk-navbar--color-text: var(--jviz-navy-over);
+      }
+      :host
+      {
+        display: block;
+        width: calc(100% - 2 * var(--desk-navbar--padding));
+        height: calc(var(--desk-navbar--height) - 2 * var(--desk-navbar--padding));
+        line-height: calc(var(--desk-navbar--height) - 2 * var(--desk-navbar--padding));
+        padding: var(--desk-navbar--padding);
+        background-color: var(--desk-navbar--color-background);
+        color: var(--desk-navbar--color-text);
+      }
+      :host .content
+      {
+        display: inline-block;
+        float: right;
+        padding-left: 0px;
+        padding-right: 10px;
+      }
+      :host .actions
+      {
+        display: none;
+        float: right;
+        padding-left: 10px;
+        padding-right: 0px;
+      }
+      :host[button-close] .actions
+      {
+        display: inline-block;
+      }
+      :host .actions .action-icon
+      {
+        display: inline-block;
+        width: 26px;
+        height: 26px;
+        padding: 2px;
+        margin-left: 5px;
+        cursor: pointer;
+        opacity: var(--desk-navbar--action-opacity);
+        transition: opacity 0.3s;
+      }
+      :host .actions .action-icon:hover
+      {
+        opacity: 1.0;
+      }
+    </style>
+    <div class="actions">
+      <template is="dom-if" if="{{ buttonClose }}">
+        <div class="action-icon" on-tap="_on_close">
+          <jviz-icons icon="close" color$="{{ color }}" size="26px" reflect>
+        </div>
+      </template>
+    </div>
+    <div class="content"><content></content></div>
+  </template>
+</dom-module>
+
+<!-- Navbar logic -->
+<script>
+  //Initialize the navbar object
+  var desk_navbar = { is: 'desk-navbar' };
+
+  //Navbar properties
+  desk_navbar.properties = {};
+  desk_navbar.properties.color = { type: String, reflectToAttribute: true, observer: '_update_color' };
+  desk_navbar.properties.buttonClose = { type: Boolean, reflectToAttribute: true, value: false };
+  //desk_navbar.properties.buttonMinimize = { type: Boolean, reflectToAttribute: true, value: false };
+
+  //Update the navbar color
+  desk_navbar._update_color = function(value)
+  {
+    //Update the sidebar background color
+    this.customStyle['--desk-navbar--color-background'] = 'var(--jviz-' + value + '-1)';
+
+    //Update the sidebar text color
+    this.customStyle['--desk-navbar--color-text'] = 'var(--jviz-' + value + '-over)';
+
+    //Update the styles
+    this.updateStyles();
+
+    //Emit the change color event
+    this.fire('change-color', { color: value }, {});
+  };
+
+  //Capture the close action
+  desk_navbar._on_close = function()
+  {
+    //Emit the close event
+    return this.fire('action-close', {}, {});
+  };
+
+  //Capture the minimize action
+  desk_navbar._on_minimize = function()
+  {
+    //Emit the minimize action
+    return this.fire('action-minimize', {}, {});
+  };
+
+  //Register the navbar element
+  Polymer(desk_navbar);
+</script>
